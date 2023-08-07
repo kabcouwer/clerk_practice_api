@@ -33,13 +33,16 @@ end
 
 group :development do
   gem 'listen', '~> 3.3'
+  gem "rubocop-github", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rails", require: false
 end
 
 group :test do
+  gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'faker'
   gem 'shoulda-matchers'
-  gem 'database_cleaner'
   gem 'simplecov', require: false
   gem 'simplecov-console', require: false
 end

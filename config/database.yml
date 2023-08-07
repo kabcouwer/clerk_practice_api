@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: clerk_practice_api_production
-  username: clerk_practice_api
-  password: <%= ENV['CLERK_PRACTICE_API_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

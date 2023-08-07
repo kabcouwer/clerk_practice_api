@@ -1,0 +1,18 @@
+databases:
+  - name: clerk_practice_api
+    databaseName: clerk_practice_api
+    user: clerk_practice_api
+
+services:
+  - type: web
+    name: clerk_practice_api
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: clerk_practice_api
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
