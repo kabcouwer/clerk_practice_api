@@ -10,3 +10,4 @@ Style/FrozenStringLiteralComment:
 
 Style/StringLiterals:
   Enabled: false
+  
