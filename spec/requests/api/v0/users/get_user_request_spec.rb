@@ -8,7 +8,7 @@ RSpec.describe 'GET /api/v0/users/:id', type: :request do
   context "user exists" do
     it 'returns a user' do
       get api_v0_user_path(@user.id)
-      
+
       expect(response).to be_successful
       expect(response.status).to eq(200)
       expect(response.content_type).to eq("application/json")
