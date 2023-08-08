@@ -14,6 +14,7 @@ gem 'pg', '~> 1.2'
 gem 'puma', '~> 5.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
+gem 'jsonapi-serializer'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
@@ -42,6 +43,7 @@ group :test do
   gem 'database_cleaner'
   gem 'factory_bot_rails'
   gem 'faker'
+  gem 'pry'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'simplecov-console', require: false
