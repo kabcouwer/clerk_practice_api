@@ -17,5 +17,5 @@ class WebhooksController < ApplicationController
     rescue
       head :bad_request
     end
-
+  end
 end
