@@ -22,8 +22,6 @@ module ClerkPracticeApi
     config.load_defaults 7.0
 
     config.active_record.legacy_connection_handling = false
-    
-    # config.action_controller.default_protect_from_forgery = true
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
