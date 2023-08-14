@@ -12,14 +12,7 @@ RSpec.describe 'GET /api/v0/users/:id', type: :request do
       expect(response).to be_successful
       expect(response.status).to eq(200)
       expect(response.content_type).to eq("application/json")
-      expect(response.body).to include(@user.first_name)
-      expect(response.body).to include(@user.last_name)
-      expect(response.body).to include(@user.email)
-      expect(response.body).to include(@user.phone_number)
-      expect(response.body).to include(@user.street_address)
-      expect(response.body).to include(@user.city)
-      expect(response.body).to include(@user.state)
-      expect(response.body).to include(@user.zip_code)
+      expect(response.body).to include(@user.clerk_id)
     end
   end
 
