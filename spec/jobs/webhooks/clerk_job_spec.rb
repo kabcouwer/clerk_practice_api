@@ -22,9 +22,9 @@ RSpec.describe Webhooks::ClerkJob, type: :job do
         object: 'event',
         type: 'test'
       }.to_json
-      inbound_webhook = InboundWebhook.create(body: body)
+      inbound_webhook = InboundWebhook.create(body:)
       json = JSON.parse(inbound_webhook.body, symbolize_names: true)
-      
+
       expect(inbound_webhook.status).to eq('pending')
       expect {
         Webhooks::ClerkJob.perform_now(inbound_webhook)

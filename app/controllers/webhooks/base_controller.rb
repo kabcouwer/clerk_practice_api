@@ -1,7 +1,6 @@
 module Webhooks
   class BaseController < ApplicationController
-    # disables CSRF middleware; required for API endpoints
-    protect_from_forgery with: :null_session
+    protect_from_forgery with: :null_session # disables CSRF middleware; required for API endpoints
 
     before_action :verify_event
 
