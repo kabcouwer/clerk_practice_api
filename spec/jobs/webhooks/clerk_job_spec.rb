@@ -1,35 +1,94 @@
 require 'rails_helper'
 
 RSpec.describe Webhooks::ClerkJob, type: :job do
-  context 'with valid inbound_webhook event type' do
-    it 'processes the webhook and creates user' do
+  context 'with valid user.created event' do
+    before do
       payload = File.read('spec/fixtures/webhooks/clerk_user_created.json')
-      inbound_webhook = InboundWebhook.create(body: payload)
-      json = JSON.parse(inbound_webhook.body, symbolize_names: true)
+      @inbound_webhook = InboundWebhook.create(body: payload)
+    end
 
-      expect(inbound_webhook.status).to eq('pending')
+    it 'creates a user' do
       expect {
-        Webhooks::ClerkJob.perform_now(inbound_webhook)
+        Webhooks::ClerkJob.perform_now(@inbound_webhook)
       }.to change(User, :count).by(1)
-      expect(inbound_webhook.reload.status).to eq('processed')
+    end
+
+    it 'updates the status' do
+      expect(@inbound_webhook.status).to eq('pending')
+
+      Webhooks::ClerkJob.perform_now(@inbound_webhook)
+
+      expect(@inbound_webhook.reload.status).to eq('processed')
     end
   end
 
-  context 'with invalid inbound_webhook event type' do
-    it 'skips the webhook and does not create user' do
-      body = {
-        data: 'data',
-        object: 'event',
-        type: 'test'
-      }.to_json
-      inbound_webhook = InboundWebhook.create(body:)
-      json = JSON.parse(inbound_webhook.body, symbolize_names: true)
+  context 'with valid user.deleted event' do
+    before do
+      payload = File.read('spec/fixtures/webhooks/clerk_user_deleted.json')
+      clerk_id = JSON.parse(payload, symbolize_names: true)[:data][:id]
+      user = User.create(clerk_id:)
+      @inbound_webhook = InboundWebhook.create(body: payload)
+    end
 
-      expect(inbound_webhook.status).to eq('pending')
+    it 'deletes a user' do
       expect {
-        Webhooks::ClerkJob.perform_now(inbound_webhook)
+        Webhooks::ClerkJob.perform_now(@inbound_webhook)
+      }.to change(User, :count).by(-1)
+    end
+
+    it 'updates the status' do
+      expect(@inbound_webhook.status).to eq('pending')
+
+      Webhooks::ClerkJob.perform_now(@inbound_webhook)
+
+      expect(@inbound_webhook.reload.status).to eq('processed')
+    end
+  end
+
+  context 'with invalid event' do
+    before do
+      payload = { event: 'user.event'}.to_json
+      @inbound_webhook = InboundWebhook.create(body: payload)
+    end
+
+    it 'does not create user' do
+      expect {
+        Webhooks::ClerkJob.perform_now(@inbound_webhook)
       }.to_not change(User, :count)
-      expect(inbound_webhook.reload.status).to eq('skipped')
+    end
+
+    it 'updates status to :skipped' do
+      expect(@inbound_webhook.status).to eq('pending')
+
+      Webhooks::ClerkJob.perform_now(@inbound_webhook)
+
+      expect(@inbound_webhook.reload.status).to eq('skipped')
+    end
+  end
+
+  context 'with false return value from service' do
+    before do
+      payload = {
+        data: {
+          id: nil
+        },
+        type: 'user.created'
+      }.to_json
+      @inbound_webhook = InboundWebhook.create(body: payload)
+    end
+
+    it 'does not create user' do
+      expect {
+        Webhooks::ClerkJob.perform_now(@inbound_webhook)
+      }.to_not change(User, :count)
+    end
+
+    it 'updates status to :failed' do
+      expect(@inbound_webhook.status).to eq('pending')
+
+      Webhooks::ClerkJob.perform_now(@inbound_webhook)
+
+      expect(@inbound_webhook.reload.status).to eq('skipped')
     end
   end
 end

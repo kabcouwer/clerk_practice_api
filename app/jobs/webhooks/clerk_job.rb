@@ -5,13 +5,18 @@ module Webhooks
     def perform(inbound_webhook)
       body = JSON.parse(inbound_webhook.body, symbolize_names: true)
       event = body[:type]
+
       case event
       when 'user.created'
-        if ClerkServices::CreateUser.new(body).call
-          inbound_webhook.update!(status: :processed)
-        else
-          inbound_webhook.update!(status: :failed)
-        end
+        processed = ClerkServices::CreateUser.new(body).call
+      when 'user.deleted'
+        processed = ClerkServices::DeleteUser.new(body).call
+      else
+        processed = false
+      end
+
+      if processed
+        inbound_webhook.update!(status: :processed)
       else
         inbound_webhook.update!(status: :skipped)
       end
